@@ -1,4 +1,4 @@
-# memory-vl
+# memutils
 
 ## Memory utilities, written in Veryl
 

@@ -1,5 +1,5 @@
 [project]
-name = "memory_veryl"
+name = "memutils"
 version = "0.1.0"
 
 [build]
@@ -11,3 +11,7 @@ target = { type = "directory", path = "target" }
 
 [test]
 waveform_target = { type = "directory", path = "target/waveform" }
+
+[publish]
+bump_commit = true
+publish_commit = true
