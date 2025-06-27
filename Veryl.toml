@@ -1,0 +1,13 @@
+[project]
+name = "memory_veryl"
+version = "0.1.0"
+
+[build]
+clock_type = "posedge"
+reset_type = "async_low"
+
+source = "src"
+target = { type = "directory", path = "target" }
+
+[test]
+waveform_target = { type = "directory", path = "target/waveform" }
