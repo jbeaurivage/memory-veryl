@@ -13,3 +13,9 @@ To run the tests, you will need `cocotb` and `verilator` installed. Then running
 ```sh
 veryl test
 ```
+
+Or, if you have `just` installed,
+
+```sh
+just t
+```

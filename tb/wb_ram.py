@@ -170,3 +170,34 @@ async def memory_data_test(dut):
             assert dut.wb.err.value == 0
             assert dut.wb.read_data.value & mask == data & mask
             assert dut.wb.read_data.value & ~mask == dut.ram.mem.value[int(address/4)] & ~mask
+
+    # ===============
+    # ERROR TEST
+    # ===============
+
+    # Write some data and wait for write to happen
+    start_write_txn(dut, 0x0, 0xb1abc001, 0b1111)
+
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+
+    assert_ack(dut)
+
+    # Trigger an error by issuing a misaligned request
+    start_write_txn(dut, 0x1, 0x00000000, 0b1111)
+
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+
+    finish_txn(dut)
+    assert dut.wb.ack.value == 0
+    assert dut.wb.err.value == 1
+
+    # Try to re-read and validate that the data is unchanged
+
+    start_read_txn(dut, 0x0, 0b1111)
+
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+
+    assert_read(dut, 0x0, 0xb1abc001)
