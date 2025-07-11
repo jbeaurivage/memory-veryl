@@ -1,6 +1,6 @@
 /// A minimal Wishbone interface that only implements
 /// the required signals, plus the byte selection (SEL)
-interface Wishbone #(
+pub interface Wishbone #(
     param ADDR_WIDTH: u8 = 32,
     param DATA_WIDTH: u8 = 32,
 ) {

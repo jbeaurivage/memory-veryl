@@ -1,4 +1,4 @@
-interface ScratchpadRamPort #(
+pub interface ScratchpadRamPort #(
     param DATA_WIDTH: u8 = 32,
     param ADDR_WIDTH: u8 = 16,
 ) {
@@ -29,7 +29,7 @@ interface ScratchpadRamPort #(
 
 /// Distributed RAM with synchronous writes
 /// and asynchronous reads
-module ScratchpadRam #(
+pub module ScratchpadRam #(
     /// Data width, in bits
     param DATA_WIDTH: u8 = 32,
     /// Number of elements this RAM holds
