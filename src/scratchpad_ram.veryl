@@ -46,11 +46,11 @@ pub module ScratchpadRam #(
 ) {
     const ADDR_WIDTH: u32 = $clog2(DEPTH);
 
-    var registers: logic<DATA_WIDTH> [DEPTH];
+    var mem: logic<DATA_WIDTH> [DEPTH];
 
     // Async read logic
     always_comb {
-        read.data = registers[read.address];
+        read.data = mem[read.address];
     }
 
     // Write logic
@@ -58,12 +58,12 @@ pub module ScratchpadRam #(
         if_reset {
             for i: u16 in 0..DEPTH {
                 /* verilator lint_off WIDTHTRUNC */
-                registers[i] = 0;
+                mem[i] = 0;
                 /* verilator lint_on WIDTHTRUNC */
             }
         } else {
             if write.write_enable {
-                registers[write.address] = write.data;
+                mem[write.address] = write.data;
             }
         }
     }
