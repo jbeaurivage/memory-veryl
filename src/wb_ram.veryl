@@ -19,7 +19,7 @@ pub module WishboneRam #(
     const DEPTH     : u32 = SIZE / {24'b0, NUM_COL};
     const ADDR_SHIFT: u32 = $clog2(DATA_WIDTH / 8);
 
-    // (* RAM_STYLE="BLOCK" *)
+    #[sv("RAM_STYLE=\"BLOCK\"")]
     var mem: logic<DATA_WIDTH> [DEPTH];
 
     initial {
@@ -37,6 +37,7 @@ pub module WishboneRam #(
     let ack: bool = port.valid_request() && !err;
 
     always_ff {
+        #[allow(missing_reset_statement)]
         if_reset {
             read_data_next = 0;
             ack_next       = 0;
