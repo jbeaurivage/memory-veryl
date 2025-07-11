@@ -1,4 +1,4 @@
 alias t := test
 
 test:
-	veryl test --wave --quiet
+    veryl test --wave --quiet

@@ -1,0 +1,22 @@
+module TestScratchpadRam (
+    clk: input clock,
+    rst: input reset,
+) {
+
+    inst read_port : ScratchpadRamPort #( DATA_WIDTH: 32, ADDR_WIDTH: 5 );
+    inst write_port: ScratchpadRamPort #( DATA_WIDTH: 32, ADDR_WIDTH: 5 );
+
+    inst regfile: ScratchpadRam #(
+        DATA_WIDTH: 32,
+        DEPTH     : 32,
+    ) (
+        clk  ,
+        rst  ,
+
+        read : read_port ,
+        write: write_port,
+    );
+}
+
+#[test(test_scratchpad_ram, TestScratchpadRam)]
+include (cocotb, "../../tb/scratchpad_ram.py");

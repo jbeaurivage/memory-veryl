@@ -1,0 +1,70 @@
+interface ScratchpadRamPort #(
+    param DATA_WIDTH: u8 = 32,
+    param ADDR_WIDTH: u8 = 16,
+) {
+
+    var address     : logic<ADDR_WIDTH>;
+    var data        : logic<DATA_WIDTH>;
+    var write_enable: logic            ;
+
+    modport read_slave {
+        address: input ,
+        data   : output,
+    }
+
+    modport read_master {
+        ..converse(read_slave)
+    }
+
+    modport write_master {
+        address     : output,
+        data        : output,
+        write_enable: output,
+    }
+
+    modport write_slave {
+        ..converse(write_master)
+    }
+}
+
+/// Distributed RAM with synchronous writes
+/// and asynchronous reads
+module ScratchpadRam #(
+    /// Data width, in bits
+    param DATA_WIDTH: u8 = 32,
+    /// Number of elements this RAM holds
+    param DEPTH: u16 = 256,
+) (
+    clk: input clock,
+    rst: input reset,
+
+    // Writes
+    write: modport ScratchpadRamPort::write_slave,
+
+    // Reads
+    read: modport ScratchpadRamPort::read_slave,
+) {
+    const ADDR_WIDTH: u32 = $clog2(DEPTH);
+
+    var registers: logic<DATA_WIDTH> [DEPTH];
+
+    // Async read logic
+    always_comb {
+        read.data = registers[read.address];
+    }
+
+    // Write logic
+    always_ff {
+        if_reset {
+            for i: u16 in 0..DEPTH {
+                /* verilator lint_off WIDTHTRUNC */
+                registers[i] = 0;
+                /* verilator lint_on WIDTHTRUNC */
+            }
+        } else {
+            if write.write_enable {
+                registers[write.address] = write.data;
+            }
+        }
+    }
+}

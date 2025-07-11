@@ -6,7 +6,7 @@ version = "0.1.0"
 clock_type = "posedge"
 reset_type = "async_low"
 
-source = "src"
+sources = ["src"]
 target = { type = "directory", path = "target" }
 
 [test]
