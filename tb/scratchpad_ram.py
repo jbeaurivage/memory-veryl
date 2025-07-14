@@ -12,7 +12,8 @@ async def scratchpad_ram_test(dut):
     # Init and reset
     dut.rst.value = 0
     dut.write_port.write_enable.value = 0
-    dut.read_port.address.value = 0
+    dut.read_ports[0].address.value = 0
+    dut.read_ports[1].address.value = 0
     dut.write_port.address.value = 0
     dut.write_port.data.value = 0
 
@@ -26,15 +27,18 @@ async def scratchpad_ram_test(dut):
     # Loop to write and read random values, 1000 test shall be enough
     for _ in range(1000):
         # Generate a random register address (1 to 31, skip 0)
-        read_address = random.randint(1, 31)
+        read_address1 = random.randint(1, 31)
+        read_address2 = random.randint(1, 31)
         write_address = random.randint(1, 31)
         write_value = random.randint(0, 0xFFFFFFFF)
 
         # perform reads
         await Timer(1, units="ns") # wait a ns to test async read
-        dut.read_port.address.value = read_address
+        dut.read_ports[0].address.value = read_address1
+        dut.read_ports[1].address.value = read_address2
         await Timer(1, units="ns")
-        assert dut.read_port.data.value == theorical_regs[read_address]
+        assert dut.read_ports[0].data.value == theorical_regs[read_address1]
+        assert dut.read_ports[1].data.value == theorical_regs[read_address2]
 
         # perform a random write
         dut.write_port.address.value = write_address
@@ -54,9 +58,8 @@ async def scratchpad_ram_test(dut):
     theorical_regs[write_address] = 0
 
     await Timer(1, units="ns") # wait a ns to test async read
-    dut.read_port.address.value = 0
+    dut.read_ports[0].address.value = 0
     await Timer(1, units="ns")
-    print(dut.read_port.data.value)
-    assert int(dut.read_port.data.value) == 0xAEAEAEAE
+    assert int(dut.read_ports[0].data.value) == 0xAEAEAEAE
 
     print("Random write/read test completed successfully.")

@@ -3,17 +3,19 @@ module TestScratchpadRam (
     rst: input reset,
 ) {
 
-    inst read_port : ScratchpadRamPort #( DATA_WIDTH: 32, ADDR_WIDTH: 5 );
+    // Test with dual read ports
+    inst read_ports: ScratchpadRamPort [2] #( DATA_WIDTH: 32, ADDR_WIDTH: 5 );
     inst write_port: ScratchpadRamPort #( DATA_WIDTH: 32, ADDR_WIDTH: 5 );
 
     inst regfile: ScratchpadRam #(
+        READ_PORTS: 2 ,
         DATA_WIDTH: 32,
         DEPTH     : 32,
     ) (
         clk  ,
         rst  ,
 
-        read : read_port ,
+        read : read_ports,
         write: write_port,
     );
 }
