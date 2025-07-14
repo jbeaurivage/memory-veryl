@@ -55,9 +55,7 @@ pub module ScratchpadRam #(
         genvar p;
         generate
             for (p = 0; p < READ_PORTS; p = p + 1) begin : gen_read_ports
-                always_comb begin
-                    read[p].data = mem[read[p].address];
-                end
+                assign read[p].data = mem[read[p].address];
             end
         endgenerate
     }}}
