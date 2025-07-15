@@ -51,15 +51,10 @@ pub module ScratchpadRam #(
 
     var mem: logic<DATA_WIDTH> [DEPTH];
 
-    embed (inline) sv{{{
-        genvar p;
-        generate
-            for (p = 0; p < READ_PORTS; p = p + 1) begin : gen_read_ports
-                assign read[p].data = mem[read[p].address];
-            end
-        endgenerate
-    }}}
-
+    // Asynchronous read logic
+    for p in 0..READ_PORTS :asgn_read {
+        assign read[p].data = mem[read[p].address];
+    }
 
     // Write logic
     always_ff {
