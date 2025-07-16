@@ -16,6 +16,11 @@ pub interface ScratchpadRamPort #(
         ..converse(read_slave)
     }
 
+    modport read_observer {
+        address: input,
+        data   : input,
+    }
+
     modport write_master {
         address     : output,
         data        : output,
@@ -24,6 +29,12 @@ pub interface ScratchpadRamPort #(
 
     modport write_slave {
         ..converse(write_master)
+    }
+
+    modport write_observer {
+        address     : input,
+        data        : input,
+        write_enable: input,
     }
 }
 
