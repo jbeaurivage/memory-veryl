@@ -1,0 +1,15 @@
+module TestWishboneDemux (
+    master_select: input logic,
+) {
+    inst masters: Wishbone [2] #( ADDR_WIDTH: 32, DATA_WIDTH: 32 );
+    inst slave  : Wishbone #( ADDR_WIDTH: 32, DATA_WIDTH: 32 );
+
+    inst demux: WishboneDemux (
+        slave          ,
+        masters        ,
+        master_select  ,
+    );
+}
+
+#[test(test_wb_demux, TestWishboneDemux)]
+include (cocotb, "../../tb/wb_demux.py");

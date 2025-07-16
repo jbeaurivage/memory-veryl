@@ -1,0 +1,15 @@
+module TestWishboneMux (
+    slave_select: input logic,
+) {
+    inst master: Wishbone #( ADDR_WIDTH: 32, DATA_WIDTH: 32 );
+    inst slaves: Wishbone [2] #( ADDR_WIDTH: 32, DATA_WIDTH: 32 );
+
+    inst mux: WishboneMux (
+        slaves        ,
+        master        ,
+        slave_select  ,
+    );
+}
+
+#[test(test_wb_mux, TestWishboneMux)]
+include (cocotb, "../../tb/wb_mux.py");

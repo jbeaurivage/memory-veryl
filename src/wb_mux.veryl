@@ -1,0 +1,32 @@
+/// Wishbone multiplexer
+///
+/// Multiplexes from a single WB master to a configurable number
+/// of slaves. This module is fully combinatorial.
+
+module WishboneMux #(
+    param ADDR_WIDTH: u8 = 32,
+    param DATA_WIDTH: u8 = 32,
+    // param NUM_MASTERS: u32 = 2 ,
+) (
+    slaves: modport Wishbone::master [2],
+    master: modport Wishbone::slave     ,
+
+    slave_select: input logic<SELECT_BITS>,
+) {
+    // const SELECT_BITS: u8 = $clog2(NUM_SLAVES);
+    const SELECT_BITS: u8 = 1;
+
+    always_comb {
+        if slave_select == 0 {
+            master        <> slaves[0];
+            slaves[1].stb =  0;
+            slaves[1].cyc =  0;
+        } else {
+            master        <> slaves[1];
+            slaves[0].stb =  0;
+            slaves[0].cyc =  0;
+        }
+    }
+    // connect master <> slaves[slave_select];
+
+}
