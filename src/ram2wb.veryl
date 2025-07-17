@@ -1,0 +1,51 @@
+/// BRAM to Wishbone protocol converter
+///
+/// Acts as a bridge between the signals
+/// accepted by synthetisable RTL BRAM,
+/// and Wishbone bus in pipelined mode as
+/// specified in the B4 spec.
+module Bram2Wishbone #(
+    param ADDR_WIDTH    : u8  = 32,
+    param DATA_WIDTH    : u8  = 32,
+    param MEM_ADDR_WIDTH: u32 = 32,
+) (
+    clk: input clock           ,
+    rst: input reset_async_high,
+
+    wb      : modport Wishbone::slave  ,
+    ram_port: modport BramPort::master,
+) {
+    const SEL_WIDTH : u8  = DATA_WIDTH / 8;
+    const ADDR_SHIFT: u32 = $clog2(SEL_WIDTH);
+
+    // Wishbone emits byte-addressed requests, while the RAM
+    // accepts word-addressed reqs.
+    let word_idx: logic<DATA_WIDTH> = wb.addr >> ADDR_SHIFT;
+
+    assign ram_port.enable            = ack;
+    assign ram_port.address           = word_idx[MEM_ADDR_WIDTH - 1:0];
+    assign ram_port.write_data        = wb.write_data;
+    assign ram_port.byte_write_enable = wb.select & {wb.write_enable & ack repeat SEL_WIDTH};
+    assign wb.read_data               = ram_port.read_data;
+
+    var prev_select: logic<SEL_WIDTH>;
+
+    // Reject misaligned requests
+    let err: bool = wb.addr[ADDR_SHIFT - 1:0] != 0;
+    // Emit ACK if CYC && STB && !ERR
+    let ack: bool = wb.valid_request() && !err;
+
+    always_ff (clk, rst) {
+        if_reset {
+            wb.ack      = 0;
+            wb.err      = 0;
+            prev_select = 0;
+        } else {
+            wb.err      = err;
+            wb.ack      = ack;
+            prev_select = wb.select;
+        }
+    }
+
+    assign wb.rty = 0;
+}

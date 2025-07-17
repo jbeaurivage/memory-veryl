@@ -1,0 +1,21 @@
+module TestDualPortBlockRam (
+    clk: input clock,
+    rst: input reset,
+) {
+    inst port_a: BramPort #( COL_WIDTH: 8, NUM_COL: 4, ADDR_WIDTH: 32 );
+    inst port_b: BramPort #( COL_WIDTH: 8, NUM_COL: 4, ADDR_WIDTH: 32 );
+
+    inst ram: DualPortBlockRam #(
+        COL_WIDTH: 8   ,
+        NUM_COL  : 4   ,
+        RAM_DEPTH: 1024,
+    ) (
+        clk_a: clk,
+        clk_b: clk,
+        port_a  ,
+        port_b
+    );
+}
+
+#[test(test_dp_bram, TestDualPortBlockRam)]
+include (cocotb, "../../tb/dp_bram.py");

@@ -8,7 +8,7 @@ async def reset(dut):
     dut.rst.value = 1
     # Asserting RESET does not set the memory to 0, just like in real hardware.
     # We do it manually for testing purposes
-    dut.ram.mem.value = [0] * len(dut.ram.mem.value)
+    dut.ram.ram.mem.value = [0] * len(memory_contents(dut))
     await RisingEdge(dut.clk)
 
     dut.wb.cyc.value = 0
@@ -52,6 +52,8 @@ def finish_txn(dut):
     dut.wb.cyc.value = 0
     dut.wb.stb.value = 0
 
+def memory_contents(dut):
+    return dut.ram.ram.mem.value
 
 @cocotb.test()
 async def memory_data_test(dut):
@@ -93,6 +95,9 @@ async def memory_data_test(dut):
 
         assert_read(dut, address, data)
 
+        finish_txn(dut)
+        await RisingEdge(dut.clk)
+
     # ==============
     # WRITE TEST #2
     # ==============
@@ -103,9 +108,6 @@ async def memory_data_test(dut):
 
         await RisingEdge(dut.clk)
 
-        # Write request has been acknowledged
-        assert_ack(dut)
-
         # Immediately start read and
         # check that setting write_data doesn't affect RAM state
         finish_txn(dut)
@@ -114,6 +116,9 @@ async def memory_data_test(dut):
 
         await RisingEdge(dut.clk)
 
+        # Write request has been acknowledged
+        assert_ack(dut)
+
         # Verify by reading back
         await RisingEdge(dut.clk)
         assert_read(dut, address, data)
@@ -121,6 +126,9 @@ async def memory_data_test(dut):
         # Read back a second time for fun
         await RisingEdge(dut.clk)
         assert_read(dut, address, data)
+
+        finish_txn(dut)
+        await RisingEdge(dut.clk)
 
     # ==============
     # NO WRITE TEST
@@ -135,14 +143,19 @@ async def memory_data_test(dut):
         await RisingEdge(dut.clk)
         assert_read(dut, i, i)
 
+        finish_txn(dut)
+        await RisingEdge(dut.clk)
+
     # ===============
     # BYTE WRITE TEST
     # ===============
     
     for byte_enable in range(16):
-        await reset(dut) # we reset memory..
-        # generate mask from byte_enable
+        # We reset memory...
+        await reset(dut)
+        # Generate mask from byte_enable
         mask = 0
+        
         for j in range(4):
             if (byte_enable >> j) & 1:
                 mask |= (0xFF << (j * 8))
@@ -159,7 +172,6 @@ async def memory_data_test(dut):
             # Read all bytes in word for good measure
             start_read_txn(dut, address, 0b1111)
 
-
             await RisingEdge(dut.clk)
 
             # Verify by reading back
@@ -169,7 +181,7 @@ async def memory_data_test(dut):
             assert dut.wb.ack.value == 1
             assert dut.wb.err.value == 0
             assert dut.wb.read_data.value & mask == data & mask
-            assert dut.wb.read_data.value & ~mask == dut.ram.mem.value[int(address/4)] & ~mask
+            assert dut.wb.read_data.value & ~mask == memory_contents(dut)[int(address/4)] & ~mask
 
     # ===============
     # ERROR TEST

@@ -9,9 +9,9 @@ module WbRamTest (
         DATA_WIDTH: 32 ,
         SIZE      : 256,
     ) (
-        clk     ,
-        rst     ,
-        port: wb,
+        clk  ,
+        rst  ,
+        wb   ,
     );
 }
 

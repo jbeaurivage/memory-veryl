@@ -20,9 +20,11 @@ module WishboneDemux #(
 
     always_comb {
         if master_select == 0 {
-            slave <> masters[0];
+            slave            <> masters[0];
+            masters[1].stall =  1;
         } else {
-            slave <> masters[1];
+            slave            <> masters[1];
+            masters[0].stall =  1;
         }
     }
     // connect master <> slaves[slave_select];

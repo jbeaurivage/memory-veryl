@@ -17,4 +17,4 @@ fmt:
     veryl fmt --quiet
 
 wave file:
-    surfer {{justfile_directory()}}/target/waveform/{{file}}.vcd >& /dev/null & 
+    surfer {{justfile_directory()}}/target/waveform/{{file}}.fst >& /dev/null & 

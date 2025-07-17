@@ -71,6 +71,9 @@ async def test_wishbone_demux_basic(dut):
     assert dut.masters[0].err.value == 1
     assert dut.masters[0].read_data.value == 0xCACABEBE
 
+    # Also check that STALL is set for any inactive master
+    assert dut.masters[1].stall.value == 1
+
     await Timer(1, units = "ns")
 
     # Test master_select = 1
@@ -104,3 +107,17 @@ async def test_wishbone_demux_basic(dut):
     assert dut.masters[1].rty.value == 1
     assert dut.masters[1].err.value == 1
     assert dut.masters[1].read_data.value == 0xB1AB2
+
+    # Check that STALL is set for any inactive master
+    assert dut.masters[0].stall.value == 1
+    assert dut.masters[0].stall.value == 1
+
+    # Also check that STALL is only set for the active
+    # master when the slave sets it
+
+    dut.slave.stall.value = 0
+
+    await Timer(1, units='ns')
+
+    assert dut.masters[1].stall.value == 0
+    assert dut.masters[0].stall.value == 1

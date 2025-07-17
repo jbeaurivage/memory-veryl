@@ -1,0 +1,69 @@
+/// True dual-port block RAM with Wishbone interfaces.
+///
+/// Adheres to the Wishbone B4 pipelined specification.
+/// Memory is byte-addressed, but must always be word-aligned
+pub module WishboneDualPortRam #(
+    /// Initialize memory with hex file if not empty
+    param INIT_FILE : string = "",
+    param ADDR_WIDTH: u8     = 32,
+    param DATA_WIDTH: u8     = 32,
+    /// RAM size, in bytes
+    param SIZE: u32 = 4096,
+) (
+    rst: input reset_async_high,
+
+    clk_a: input 'a clock,
+    clk_b: input 'b clock,
+
+    wb_a: modport 'a Wishbone::slave,
+    wb_b: modport 'b Wishbone::slave,
+) {
+    const COL_WIDTH     : u8  = 8;
+    const NUM_COL       : u8  = DATA_WIDTH / COL_WIDTH;
+    const RAM_DEPTH     : u32 = SIZE / {24'b0, NUM_COL};
+    const MEM_ADDR_WIDTH: u32 = $clog2(RAM_DEPTH);
+
+    inst ram_port_a: 'a BramPort #( ADDR_WIDTH: MEM_ADDR_WIDTH, NUM_COL, COL_WIDTH );
+    inst ram_port_b: 'b BramPort #( ADDR_WIDTH: MEM_ADDR_WIDTH, NUM_COL, COL_WIDTH );
+
+    inst ram: DualPortBlockRam #(
+        INIT_FILE                 ,
+        NUM_COL                   ,
+        COL_WIDTH                 ,
+        RAM_DEPTH                 ,
+        ADDR_WIDTH: MEM_ADDR_WIDTH,
+    ) (
+        clk_a  ,
+        clk_b  ,
+
+        port_a: ram_port_a,
+        port_b: ram_port_b,
+    );
+
+    // SAFETY: reset signal is async anyways, so no synchronization needed
+    unsafe (cdc) {
+        inst ram2wb_a: Bram2Wishbone #(
+            ADDR_WIDTH           ,
+            DATA_WIDTH           ,
+            MEM_ADDR_WIDTH       ,
+        ) (
+            clk           : clk_a,
+            rst           : rst  ,
+
+            wb      : wb_a      ,
+            ram_port: ram_port_a,
+        );
+
+        inst ram2wb_b: Bram2Wishbone #(
+            ADDR_WIDTH           ,
+            DATA_WIDTH           ,
+            MEM_ADDR_WIDTH       ,
+        ) (
+            clk           : clk_b,
+            rst           : rst  ,
+
+            wb      : wb_b      ,
+            ram_port: ram_port_b,
+        );
+    }
+}

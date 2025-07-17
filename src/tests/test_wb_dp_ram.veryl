@@ -1,0 +1,24 @@
+module DualPortWbRamTest (
+    clk: input clock,
+    rst: input reset,
+) {
+    inst wb_a: Wishbone #(ADDR_WIDTH: 32, DATA_WIDTH: 32);
+    inst wb_b: Wishbone #(ADDR_WIDTH: 32, DATA_WIDTH: 32);
+
+    inst ram: WishboneDualPortRam #(
+        ADDR_WIDTH: 32 ,
+        DATA_WIDTH: 32 ,
+        SIZE      : 256,
+    ) (
+        rst  ,
+
+        clk_a: clk  ,
+        clk_b: clk  ,
+
+        wb_a   ,
+        wb_b   ,
+    );
+}
+
+#[test(test_wb_dp_ram, DualPortWbRamTest)]
+include (cocotb, "../../tb/wb_dp_ram.py");
