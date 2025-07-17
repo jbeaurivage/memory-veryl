@@ -1,4 +1,7 @@
-/// Interface used by synthesizable Block RAM
+/// Interface used by synthesizable Block RAMs.
+///
+/// Note that according to this interface, the
+/// RAM is word-addressed.
 interface BramPort #(
     param COL_WIDTH : u8  = 8 ,
     param NUM_COL   : u8  = 4 ,

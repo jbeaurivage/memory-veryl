@@ -38,12 +38,12 @@ pub module WishboneRam #(
     );
 
     inst ram2wb: Bram2Wishbone #(
-        ADDR_WIDTH           ,
-        DATA_WIDTH           ,
-        MEM_ADDR_WIDTH       ,
+        ADDR_WIDTH      ,
+        DATA_WIDTH      ,
+        MEM_ADDR_WIDTH  ,
     ) (
-        clk                  ,
-        rst,
+        clk  ,
+        rst  ,
 
         wb        ,
         ram_port  ,

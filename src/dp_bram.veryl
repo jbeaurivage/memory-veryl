@@ -32,7 +32,8 @@ pub module DualPortBlockRam #(
         }
     }
 
-    // SAFETY: Block RAM primitive takes care of synchronization
+    // SAFETY: Block RAM primitive takes care of
+    // synchronization at synthesis (hopefully)
     unsafe (cdc) {
         always_ff (clk_a) {
             if port_a.enable {

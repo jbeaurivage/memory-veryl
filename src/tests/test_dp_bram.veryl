@@ -10,10 +10,10 @@ module TestDualPortBlockRam (
         NUM_COL  : 4   ,
         RAM_DEPTH: 1024,
     ) (
-        clk_a: clk,
-        clk_b: clk,
-        port_a  ,
-        port_b
+        clk_a : clk,
+        clk_b : clk,
+        port_a     ,
+        port_b     ,
     );
 }
 

@@ -43,24 +43,24 @@ pub module WishboneDualPortRam #(
     // SAFETY: reset signal is async anyways, so no synchronization needed
     unsafe (cdc) {
         inst ram2wb_a: Bram2Wishbone #(
-            ADDR_WIDTH           ,
-            DATA_WIDTH           ,
-            MEM_ADDR_WIDTH       ,
+            ADDR_WIDTH      ,
+            DATA_WIDTH      ,
+            MEM_ADDR_WIDTH  ,
         ) (
-            clk           : clk_a,
-            rst           : rst  ,
+            clk: clk_a,
+            rst: rst  ,
 
             wb      : wb_a      ,
             ram_port: ram_port_a,
         );
 
         inst ram2wb_b: Bram2Wishbone #(
-            ADDR_WIDTH           ,
-            DATA_WIDTH           ,
-            MEM_ADDR_WIDTH       ,
+            ADDR_WIDTH      ,
+            DATA_WIDTH      ,
+            MEM_ADDR_WIDTH  ,
         ) (
-            clk           : clk_b,
-            rst           : rst  ,
+            clk: clk_b,
+            rst: rst  ,
 
             wb      : wb_b      ,
             ram_port: ram_port_b,

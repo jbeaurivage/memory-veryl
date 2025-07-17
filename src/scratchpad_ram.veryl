@@ -31,6 +31,10 @@ pub interface ScratchpadRamPort #(
         ..converse(write_master)
     }
 
+    // Technically the same as write_slave,
+    // but kept for consistency. Semantically
+    // the observer modports won't change
+    // the slave's state
     modport write_observer {
         address     : input,
         data        : input,
