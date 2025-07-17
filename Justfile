@@ -8,6 +8,8 @@ check:
 test TEST *extra_args:
     veryl test {{justfile_directory()}}/src/tests/test_{{TEST}}.veryl \
         {{justfile_directory()}}/src/*.veryl \
+        {{justfile_directory()}}/src/bram/*.veryl \
+        {{justfile_directory()}}/src/wb/*.veryl \
         --wave --quiet {{extra_args}}
 
 test-all *EXTRA_ARGS:
