@@ -30,6 +30,8 @@ pub interface Wishbone #(
     }
 
     modport slave {
+        valid_request: import,
+
         cyc         : input,
         stb         : input,
         write_enable: input,
@@ -45,11 +47,11 @@ pub interface Wishbone #(
         lock: input ,
         rty : output,
         err : output,
-
-        valid_request: import,
     }
 
     modport master {
+        valid_request: import,
+
         ..converse(slave)
     }
 }
