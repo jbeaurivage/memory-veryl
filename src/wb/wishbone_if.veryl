@@ -26,7 +26,7 @@ pub interface Wishbone #(
     var rty : logic;
 
     function valid_request -> bool {
-        return cyc && stb;
+        return cyc && stb && !stall;
     }
 
     modport slave {
