@@ -8,7 +8,7 @@ pub module WishboneDualPortRam #(
     param ADDR_WIDTH: u8     = 32,
     param DATA_WIDTH: u8     = 32,
     /// RAM size, in bytes
-    param SIZE: u32 = 4096,
+    param SIZE: u64 = 4096,
 ) (
     rst: input reset_async_high,
 
@@ -20,7 +20,7 @@ pub module WishboneDualPortRam #(
 ) {
     const COL_WIDTH     : u8  = 8;
     const NUM_COL       : u8  = DATA_WIDTH / COL_WIDTH;
-    const RAM_DEPTH     : u32 = SIZE / {24'b0, NUM_COL};
+    const RAM_DEPTH     : u64 = SIZE / {56'b0, NUM_COL};
     const MEM_ADDR_WIDTH: u32 = $clog2(RAM_DEPTH);
 
     inst ram_port_a: 'a BramPort #( ADDR_WIDTH: MEM_ADDR_WIDTH, NUM_COL, COL_WIDTH );
